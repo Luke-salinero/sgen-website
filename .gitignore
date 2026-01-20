@@ -1,0 +1,75 @@
+############################
+# OS / General
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# VS Code
+############################
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+############################
+# PyCharm / JetBrains
+############################
+.idea/
+*.iml
+
+############################
+# Python / FastAPI
+############################
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+ENV/
+env/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+*.log
+
+############################
+# Python packaging / builds
+############################
+build/
+dist/
+*.egg-info/
+.eggs/
+
+############################
+# Node / React (Vite)
+############################
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+############################
+# Env files (secrets)
+############################
+.env
+.env.*
+!.env.example
+!.env.template
+
+############################
+# Optional: local SQLite
+############################
+*.db
+*.sqlite
+*.sqlite3
