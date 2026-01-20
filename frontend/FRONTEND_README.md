@@ -113,15 +113,3 @@ Build output will be in:
 dist/
 ```
 
-## Project Structure
-```
-frontend/
-├── src/
-│   ├── api/
-│   ├── components/
-│   ├── pages/
-│   └── main.tsx
-├── index.html
-├── vite.config.ts
-├── package.json
-```
