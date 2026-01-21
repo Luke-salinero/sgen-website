@@ -1,35 +1,112 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useMemo, useRef, useState } from "react";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function makeBits(len: number) {
+  let s = "";
+  for (let i = 0; i < len; i++) s += Math.random() > 0.5 ? "1" : "0";
+  return s;
 }
 
-export default App
+function chunk(s: string, size = 12) {
+  const out: string[] = [];
+  for (let i = 0; i < s.length; i += size) out.push(s.slice(i, i + size));
+  return out;
+}
+
+function BinaryBox({
+  title = "SGEN",
+  subtitle = "Bits rearranging into combinations of itself",
+}: {
+  title?: string;
+  subtitle?: string;
+}) {
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(false);
+  const [bits, setBits] = useState<string[]>([]);
+  const timerRef = useRef<number | null>(null);
+
+  // Controls density of bits
+  const baseLen = useMemo(() => 360, []);
+
+  useEffect(() => {
+    setBits(chunk(makeBits(baseLen), 18));
+  }, [baseLen]);
+
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!active) {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+      timerRef.current = null;
+      return;
+    }
+
+    timerRef.current = window.setInterval(() => {
+      setBits(chunk(makeBits(baseLen), 18));
+    }, 65);
+
+    return () => {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
+  }, [active, baseLen]);
+
+  return (
+    <section className="bin-section">
+      <div ref={boxRef} className={`bin-box ${active ? "is-active" : ""}`}>
+        <div className="bin-head">
+          <div className="bin-kicker">SCROLL MODULE</div>
+          <h2 className="bin-title">{title}</h2>
+          <p className="bin-subtitle">{subtitle}</p>
+        </div>
+
+        <div className="bin-screen" aria-hidden="true">
+          {bits.map((line, i) => (
+            <span className="bin-line" key={i}>
+              {line}
+            </span>
+          ))}
+        </div>
+
+        <div className="bin-footer">
+          <span className="bin-pill">{active ? "LIVE" : "IDLE"}</span>
+          <span className="bin-hint">Scroll away to pause</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function App() {
+  return (
+    <div className="page">
+      {/* Top hero (keep yours if you already have it) */}
+      <main className="hero">
+        <h1 className="title">
+          Welcome to <span className="glint">SGEN</span>
+        </h1>
+        <p className="subtitle">Scroll down to see the binary module.</p>
+      </main>
+
+      {/* Spacer so you can scroll */}
+      <div style={{ height: "70vh" }} />
+
+      {/* Scroll-triggered binary box */}
+      <BinaryBox />
+
+      {/* More spacer */}
+      <div style={{ height: "80vh" }} />
+    </div>
+  );
+}
