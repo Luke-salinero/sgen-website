@@ -1,4 +1,6 @@
 /* --- Base page layout --- */
+.page { outline: 4px solid red; }
+
 .page {
   min-height: 100vh;
   display: grid;

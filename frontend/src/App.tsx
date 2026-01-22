@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
+import { login, signup, logout, isAuthenticated } from "./auth/auth";
 
 function makeBits(len: number) {
   let s = "";
@@ -89,24 +90,48 @@ function BinaryBox({
 }
 
 export default function App() {
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    setAuthed(isAuthenticated());
+  }, []);
+
   return (
     <div className="page">
-      {/* Top hero (keep yours if you already have it) */}
+      {/* Top hero */}
       <main className="hero">
         <h1 className="title">
           Welcome to <span className="glint">SGEN</span>
         </h1>
-        <p className="subtitle">Scroll down to see the binary module.</p>
+
+        <p className="subtitle">
+          {authed
+            ? "You’re logged in via Keycloak"
+            : "Log in or create an account through Keycloak."}
+        </p>
+
+        <div className="actions">
+          {!authed ? (
+            <>
+              <button className="btn primary" onClick={() => login()}>
+                Log in
+              </button>
+              <button className="btn ghost" onClick={() => signup()}>
+                Sign up
+              </button>
+            </>
+          ) : (
+            <button className="btn ghost" onClick={() => logout()}>
+              Log out
+            </button>
+          )}
+        </div>
       </main>
 
-      {/* Spacer so you can scroll */}
-      <div style={{ height: "70vh" }} />
+      <div style={{ height: "60vh" }} />
 
-      {/* Scroll-triggered binary box */}
       <BinaryBox />
-
-      {/* More spacer */}
-      <div style={{ height: "80vh" }} />
+      <div style={{ height: "70vh" }} />
     </div>
   );
 }
