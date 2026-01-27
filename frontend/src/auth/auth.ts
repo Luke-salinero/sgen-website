@@ -6,7 +6,6 @@ export async function initAuth(){
         pkceMethod: "S256",
         checkLoginIframe: false,
     })
-
     return authenticated;
 }
     
@@ -22,9 +21,15 @@ export function logout() {
   return keycloak.logout({redirectUri: window.location.origin});
 }
 
-export function getToken() {
-  return keycloak.token;
+export async function getToken(minValiditySeconds = 30): Promise<string | null> {
+  try {
+    await keycloak.updateToken(minValiditySeconds);
+    return keycloak.token ?? null;
+  } catch {
+    return null;
+  }
 }
+
 
 export async function ensureFreshToken(minValiditySeconds = 30) {
   try {
@@ -36,5 +41,5 @@ export async function ensureFreshToken(minValiditySeconds = 30) {
 }
 
 export function isAuthenticated() {
-  return Boolean(keycloak.authenticated);
+    return Boolean(keycloak.authenticated);
 }
