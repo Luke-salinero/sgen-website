@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
-import { login, signup, logout, isAuthenticated } from "./auth/auth";
+import { login, signup, logout, isAuthenticated, getToken } from "./auth/auth";
 
 function makeBits(len: number) {
   let s = "";
@@ -91,14 +91,48 @@ function BinaryBox({
 
 export default function App() {
   const [authed, setAuthed] = useState(false);
+  const [loading, setLoading] = useState<"create" | "rotate" | null>(null);
+  // const [err, setErr] = useState<string>("");
+  const [statusMessage, setStatusMessage] = useState<string>("");
 
   useEffect(() => {
     setAuthed(isAuthenticated());
   }, []);
 
+  async function callApiKeyEndpoint(rotate: boolean) {
+    // setErr("");
+    setLoading(rotate ? "rotate" : "create");
+    setStatusMessage("");
+
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Missing Keycloak token. Log in again.");
+
+      const res = await fetch("http://127.0.0.1:8000/v1/keys", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rotate }),
+      });
+
+      const text = await res.text();
+
+      if (!res.ok) {
+        throw new Error(text);
+      }
+      setStatusMessage(rotate ? "Key regenerated!" : "API Key sent!");
+
+    // } catch (e: any) {
+    //   setErr(e?.message ?? String(e));
+    } finally {
+      setLoading(null);
+    }
+  }
+
   return (
     <div className="page">
-      {/* Top hero */}
       <main className="hero">
         <h1 className="title">
           Welcome to <span className="glint">SGEN</span>
@@ -126,10 +160,47 @@ export default function App() {
             </button>
           )}
         </div>
+
+        {/* API key actions */}
+
+        <div className="actions">
+          {authed ? (
+            <>
+              <button
+                className="btn primary" 
+                disabled={!authed || loading !== null}
+                onClick={() => callApiKeyEndpoint(false)}
+              >
+                {loading === "create" ? "Sending..." : "Send API Key"}
+              </button>
+
+              <button
+                className="btn primary"
+                disabled={!authed || loading !== null}
+                onClick={() => callApiKeyEndpoint(true)}
+              >
+                {loading === "rotate" ? "Regenerating..." : "Regenerate"}
+              </button>
+            </>
+          ) : (
+            <p className="subtitle">Log in to get your API key</p>
+          )}
+        </div>
+    {statusMessage && (
+      <div
+        style={{
+          marginTop: 10,
+          textAlign: "center",
+          color: "rgba(255,255,255,0.75)",
+          fontSize: 14,
+        }}
+        >
+        {statusMessage}
+      </div>
+      )}
       </main>
 
       <div style={{ height: "60vh" }} />
-
       <BinaryBox />
       <div style={{ height: "70vh" }} />
     </div>
