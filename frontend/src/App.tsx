@@ -199,10 +199,26 @@ export default function App() {
       </div>
       )}
       </main>
-
-      <div style={{ height: "60vh" }} />
       <BinaryBox />
-      <div style={{ height: "70vh" }} />
+      <div style={{ height: "5vh" }} />
+      <section className="docs">
+        <div className="docs-inner">
+          <h2>Documentation</h2>
+
+          <p>
+            INPUT DOCUMENTATION AFTER BINARY ENCODING
+           <ul>
+            <li>What problem it solves</li>
+            <li>Who it’s for</li>
+            <li>What it can and can’t do</li>
+            <li>Answer the “should I use this?” question</li>
+            <li>How do they install it?</li>
+            <li>Small working example</li>
+            <li>Should list all public functions and uses</li>
+          </ul>
+          </p>
+        </div>
+      </section>
     </div>
   );
 }

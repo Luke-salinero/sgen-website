@@ -16,7 +16,6 @@ select = [
   "RET",  # Return correctness
   "ASYNC" # Async correctness
 ]
-
 ignore = [
   "E203",  # Black compatibility
 ]
