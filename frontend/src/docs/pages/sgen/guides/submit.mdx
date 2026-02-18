@@ -1,0 +1,42 @@
+## Submitting a Job
+
+ Submitting a job in SGEN uses `sgen.quick_submit()`. This sends the configuration to the SGEN gateway, where it is processed asynchronously.
+
+---
+### Example Code
+```python
+from sgen import quick_submit, load_config
+
+API_KEY = "sk_live_123456789"
+
+config = sgen.load_config("config.json")
+
+job = sgen.quick_submit(config, API_KEY)
+
+print(job)
+```
+---
+
+### Example Response
+
+```python
+{
+    "job_id": "b10425d6-c8eb-4ccb-8f93-a731bbe7d616",
+    "status": "Pending",
+    "mode": "Live",
+    "result": None,
+    "error": None
+}
+```
+---
+
+### Response Fields
+
+| Field   | Type    | Description |
+|----------|----------|-------------|
+| `job_id` | `str` | A unique UUID identifying the submitted job. |
+| `status` | `str` | Initial job state. Typically `"Pending"` after submission. May be `"Failed"` if processing fails early. |
+| `mode` | `str` | Execution mode: `"Live"` for real gateway execution, `"Mock"` for test mode. |
+| `result` | `dict`| `None` | `None` immediately after submission. Final results are retrieved later via `results()`. |
+| `error` | `str`| `None` | `None` on successful submission. Contains error details if the job failed. |
+---

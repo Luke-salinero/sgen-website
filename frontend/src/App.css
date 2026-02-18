@@ -1,13 +1,9 @@
 /* --- Base page layout --- */
-.page { outline: 4px solid red; }
-
 .page {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
   padding: 48px 20px;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
   background: radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
               radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
               #07090f;
@@ -49,8 +45,9 @@
 /* --- Hero container --- */
 .hero {
   position: relative;
-  max-width: 100%;
+  max-width: 1100px;
   width: 100%;
+  margin: 0 auto;
   text-align: center;
   padding: 44px 28px;
   border-radius: 24px;
@@ -62,29 +59,6 @@
   backdrop-filter: blur(12px);
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.03);
-  color: rgba(255,255,255,0.78);
-  font-size: 13px;
-  letter-spacing: 0.2px;
-  margin-bottom: 18px;
-}
-
-.badge-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(120, 170, 255, 0.9);
-  box-shadow: 0 0 14px rgba(120, 170, 255, 0.8);
-}
-
-/* --- Title + glint effect --- */
 .title {
   margin: 0;
   font-weight: 700;
@@ -103,7 +77,6 @@
     0 0 60px rgba(255,255,255,0.12);
 }
 
-/* shimmering highlight sweeping across the text */
 .glint::after {
   content: "";
   position: absolute;
@@ -124,7 +97,6 @@
   pointer-events: none;
 }
 
-/* subtle inner gradient to feel "metallic" */
 .glint::before {
   content: "";
   position: absolute;
@@ -197,43 +169,11 @@
   background: rgba(255,255,255,0.02);
 }
 
-/* --- Meta cards --- */
-.meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.meta-card {
-  text-align: left;
-  padding: 14px 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.10);
-}
-
-.meta-title {
-  font-size: 13px;
-  color: rgba(255,255,255,0.85);
-  margin-bottom: 6px;
-  letter-spacing: 0.2px;
-}
-
-.meta-desc {
-  font-size: 13px;
-  color: rgba(255,255,255,0.62);
-}
-
-@media (max-width: 720px) {
-  .hero { padding: 34px 18px; }
-  .meta { grid-template-columns: 1fr; }
-}
-
-/* Accessibility: respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .glint::after { animation: none; opacity: 0.6; transform: none; }
-  .btn { transition: none; }
+.statusMessage {
+  margin-top: 10px;
+  text-align: center;
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
 }
 
 /* --- Scroll-triggered binary box --- */
@@ -342,26 +282,54 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .glint::after { animation: none; opacity: 0.6; transform: none; }
+  .btn { transition: none; }
   .bin-line { animation: none; }
 }
 
+/* --- Docs section --- */
 .docs {
+  width: 100%;
   padding: 72px 20px;
 }
 
 .docs-inner {
   max-width: 920px;
   margin: 0 auto;
-   text-align: center;
 }
 
-.docs h2 {
-  margin: 0 0 12px;
+/* This class makes MDX/markdown “feel like docs” */
+.docs-prose {
+  text-align: left;
+  line-height: 1.7;
+  font-size: 16px;
+  color: rgba(255,255,255,0.86);
 }
 
-.docs p {
-  margin: 0;
-  opacity: 0.85;
-  line-height: 1.6;
+.docs-prose h1 { font-size: 34px; margin: 0 0 16px; }
+.docs-prose h2 { font-size: 24px; margin: 28px 0 12px; }
+.docs-prose h3 { font-size: 18px; margin: 20px 0 10px; }
+.docs-prose p { margin: 12px 0; opacity: 0.9; }
+.docs-prose ul { margin: 12px 0; padding-left: 18px; }
+.docs-prose li { margin: 6px 0; }
+
+.docs-prose pre {
+  overflow: auto;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
 }
 
+.docs-prose code {
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+}
+
+.docs-prose pre code {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
