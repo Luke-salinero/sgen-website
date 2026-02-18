@@ -1,0 +1,79 @@
+# Measure Gateway Latency
+
+Use these helpers to verify the SGEN gateway is reachable and measure how responsive it is from your environment.
+
+SGEN provides two public utilities:
+
+- `health_check()` — calls `/health`, prints debugging details, and returns the parsed JSON response
+- `round_trip_time()` — measures a `/health` request and returns latency in milliseconds
+
+---
+
+## Example Code
+
+```python
+import sgen
+
+print("Health:", sgen.health_check())
+print("RTT:", sgen.round_trip_time(), "ms")
+```
+
+---
+
+## health_check()
+
+`health_check()` is useful when you want a verbose diagnostic output. It prints request details (URL, status, headers, body) and returns the parsed JSON response.
+
+### Example Response
+
+The gateway `/health` endpoint returns a JSON object like:
+
+```python
+{
+  "service": "sgen-gateway",
+  "version": "0.1.0",
+  "status": "ok",
+  "mode": "live"
+}
+```
+
+### Response Fields
+
+| Field | Type | Description |
+|------|------|-------------|
+| `service` | `str` | Service name reported by the gateway. |
+| `version` | `str` | Service version reported by the gateway. |
+| `status` | `str` | `"ok"` when the gateway is healthy. |
+| `mode` | `str` | Gateway execution mode (commonly `"mock"` or `"live"`). |
+
+---
+
+## round_trip_time()
+
+`round_trip_time()` measures a single request to `/health` and returns the elapsed time in milliseconds.
+
+### Example Output
+
+```text
+RTT: 83.21 ms
+```
+
+---
+
+## Tips
+
+### Sample RTT multiple times (recommended)
+
+Single RTT measurements can fluctuate. For a more stable value, collect multiple samples and compute an average.
+
+```python
+import sgen
+
+samples = [sgen.round_trip_time() for _ in range(5)]
+avg = round(sum(samples) / len(samples), 2)
+
+print("Samples:", samples)
+print("Average:", avg, "ms")
+```
+
+---

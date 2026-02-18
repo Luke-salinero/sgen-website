@@ -1,0 +1,110 @@
+# Getting Started
+
+SGEN is a Python library XXXXXXX.
+
+---
+
+## Installation
+
+Install SGEN using pip:
+
+```bash
+pip install sgen
+```
+
+You can verify installation:
+
+```bash
+python -c "import sgen; print('SGEN installed')"
+```
+
+---
+
+## Example `config.json`
+
+SGEN requires a configuration file containing:
+
+```json
+{
+  "n": 15,
+  "k": 8,
+  "existential": true,
+  "prune_masks": [
+    "0b000001001100111",
+    "0b000010010101011"
+  ],
+  "find_masks": [
+    "0b111000111000000",
+    "0b111111000000000"
+  ],
+  "ranges": [
+    [
+      "0b000000000111111",
+      "0b111111000000000"
+    ]
+  ]
+}
+```
+
+Both `n` and `k` must be integers.
+
+---
+
+## First Job (5-Minute Example)
+
+Here is a minimal end-to-end workflow:
+
+```python
+import time
+import sgen
+
+API_KEY = "sk_live_123456789"
+
+# Load configuration
+config = sgen.load_config("config.json")
+
+# Submit job
+job = sgen.quick_submit(config, API_KEY)
+job_id = job["job_id"]
+
+print("Submitted:", job_id)
+
+# Poll until complete
+while True:
+    status = sgen.status(job_id, API_KEY)
+
+    if status is None:
+        # Job not ready yet
+        time.sleep(5)
+        continue
+
+    if status["status"] == "completed":
+        print("Completed:", status)
+        break
+
+    if status["status"] == "failed":
+        print("Failed:", status.get("error"))
+        break
+
+    print("Progress:", status)
+    time.sleep(5)
+
+# Retrieve final results (optional)
+results = sgen.results(job_id, API_KEY)
+
+if results:
+    print("Results:", results)
+```
+
+---
+
+## Understanding the Functions
+
+| Step | Function | Purpose |
+|------|----------|----------|
+| 1 | `load_config()` | Reads  `config.json`. |
+| 2 | `quick_submit()` | Sends your configuration to the SGEN gateway and returns a `job_id`. |
+| 3 | `status()` | Polls the gateway for progress updates. |
+| 4 | `results()` | Retrieves final results when available. |
+
+---

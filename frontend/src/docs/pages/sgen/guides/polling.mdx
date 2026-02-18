@@ -1,0 +1,138 @@
+# Polling a Job
+
+After submitting a job with `quick_submit()`, you can poll the gateway to monitor progress and determine when the job completes.
+
+SGEN jobs run asynchronously. The `status()` function allows you to:
+
+- Check current progress
+- Retrieve example candidates (when completed)
+
+---
+
+## Example Code
+
+```python
+import time
+import sgen
+
+API_KEY = "sk_live_123456789"
+
+config = sgen.load_config("config.json")
+
+job = sgen.quick_submit(config, api_key=API_KEY)
+job_id = job["job_id"]
+
+print("Submitted:", job_id)
+
+# Poll until job completes or fails
+while True:
+    st = sgen.status(
+        job_id=job_id,
+        api_key=API_KEY,
+        example_count=25
+    )
+
+    if st["status"] == "completed":
+        print("Completed:", st)
+        break
+
+    if st["status"] == "failed":
+        print("Failed:", st.get("error"))
+        break
+
+    # Still running
+    print("Progress:", st)
+    time.sleep(5)
+```
+
+---
+
+## Example Response (Running)
+
+While a job is still processing, `status()` returns a progress summary:
+
+```python
+{
+  "job_id": "b10425d6-c8eb-4ccb-8f93-a731bbe7d616",
+  "status": "running",
+  "found": 12,
+  "percent complete": "41.87%",
+  "runtime": "83.21s",
+  "ETA": "115.42s",
+  "GCPS": "8.12"
+}
+```
+
+---
+
+## Example Response (Completed)
+
+When the job completes, `status()` returns a completion summary and example candidates:
+
+```python
+{
+  "job_id": "b10425d6-c8eb-4ccb-8f93-a731bbe7d616",
+  "status": "completed",
+  "found": 42,
+  "runtime": "198.57s",
+  "total work": 250000,
+  "total valid candidates": 42,
+  "example valid candidates": [
+    "010101010101",
+    "001011010110"
+  ]
+}
+```
+
+---
+
+## Example Response (Failed)
+
+If the job fails, `status()` returns:
+
+```python
+{
+  "job_id": "b10425d6-c8eb-4ccb-8f93-a731bbe7d616",
+  "status": "failed",
+  "error": {
+    "message": "job failed"
+  }
+}
+```
+
+---
+
+## Parameters
+
+`status()` supports an optional `example_count` parameter.
+
+- Must be between **1 and 50**
+- Controls how many example candidates are returned
+- Applies only when the job is `"completed"`
+
+---
+
+## Response Fields
+
+| Field | Type | Description |
+|------|------|-------------|
+| `job_id` | `str` | The UUID identifying the job being polled. |
+| `status` | `str` | Job state: `"running"`, `"completed"`, or `"failed"`. |
+| `found` | `int` | Number of valid candidates found so far (or total found if completed). |
+| `percent complete` | `str` | Progress percentage while the job is running. |
+| `runtime` | `str` | Total runtime elapsed (seconds). |
+| `ETA` | `str` | Estimated time remaining while running. |
+| `GCPS` | `str` | Giga-Combinations per second |
+| `total work` | `int` | Total work units processed (completed only). |
+| `total valid candidates` | `int` | Total valid candidates found (completed only). |
+| `example valid candidates` | `str` | `list[str]` | `None` | Example candidates. If `example_count == 1`, may return a single value; otherwise a list. |
+| `error` | `dict` | `None` | Present when status is `"failed"`. Contains failure details. |
+
+---
+
+## Recommended Polling Practices
+
+- Use a sleep interval (e.g., 5 seconds) between polls.
+- Increase `example_count` only when needed (maximum 50).
+
+SGEN jobs are designed to be polled. Avoid tight loops without delays.
