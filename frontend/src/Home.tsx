@@ -138,9 +138,7 @@ export default function Home() {
         </h1>
 
         <p className="subtitle">
-          {authed
-            ? "You’re logged in"
-            : "Log in or create an account."}
+          INPUT HERE LIKE A ONE SENTENCE ELEVATOR PITCH FOR SGEN
         </p>
 
         <div className="actions">
@@ -183,12 +181,20 @@ export default function Home() {
 
       <section className="docs">
         <div className="docs-inner">
-          {/* If SgenDocs already includes a section wrapper, remove this outer section */}
           <SgenDocs />
         </div>
       </section>
 
       <div style={{ height: "6vh" }} />
+      <footer className="site-footer">
+        <div className="footer-links">
+          <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+          <span className="footer-sep">•</span>
+          <Link to="/terms" className="footer-link">Terms of Use</Link>
+          <span className="footer-sep">•</span>
+          <Link to="/licensing" className="footer-link">Licensing</Link>
+        </div>
+      </footer>
     </div>
   );
 }

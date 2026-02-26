@@ -8,7 +8,7 @@ export default function DocsPage() {
       <div className="bg-grid" />
       <div className="bg-glow" />
 
-      <section className="docs" style={{ paddingTop: 40 }}>
+      <section className="docs" style={{ paddingTop: 20 }}>
         <div className="docs-inner">
           <SgenDocs />
         </div>

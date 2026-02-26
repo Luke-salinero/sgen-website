@@ -15,7 +15,7 @@ export default function AppLayout() {
     <div className="app-shell">
       <header className="topbar">
         <Link to="/" className="brand">
-          <span className="glint">SGEN</span>
+          <span>SGEN</span>
         </Link>
 
         {/* right side */}

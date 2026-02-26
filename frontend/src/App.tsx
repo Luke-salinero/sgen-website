@@ -2,7 +2,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
 import DocsLayout from "./docs/DocsLayout";
-import AppLayout from "./AppLayout";
+import AppLayout from "./AppLayout";  
+import ScrollToTop from "./ScrollToTop";
 
 // MDX pages...
 import Overview from "./docs/pages/sgen/overview.mdx";
@@ -18,15 +19,20 @@ import GuideTroubleshooting from "./docs/pages/sgen/guides/troubleshooting.mdx";
 
 import Api from "./docs/pages/sgen/api.mdx";
 
+// Footer
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfUse from "./TermsOfUse";
+import Licensing from "./Licensing";
+
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
-        {/* ✅ NEW: everything lives under AppLayout so topbar is always visible */}
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Home />} />
 
-          <Route path="/docs" element={<DocsLayout />}>
+          <Route path="docs" element={<DocsLayout />}>
             <Route index element={<Navigate to="/docs/sgen" replace />} />
 
             <Route path="sgen" element={<Overview />} />
@@ -42,6 +48,11 @@ export default function App() {
 
             <Route path="sgen/api" element={<Api />} />
           </Route>
+
+          {/* Footer pages */}
+          <Route path="privacy" element={<PrivacyPolicy />} />
+          <Route path="terms" element={<TermsOfUse />} />
+          <Route path="licensing" element={<Licensing />} />
         </Route>
       </Routes>
     </BrowserRouter>

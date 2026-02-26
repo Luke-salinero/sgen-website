@@ -1,13 +1,14 @@
 html, body, #root {
   height: 100%;
-  margin: 0;           /* ✅ removes default white gap */
+  margin: 0;          
   padding: 0;
-  background: #07090f; /* ✅ prevents white showing behind anything */
+  background: #07090f;
 }
+
 
 /* --- Base page layout --- */
 .page {
-  min-height: 100vh;
+  min-height: calc(100vh - 56px); /* 56px = your topbar height */
   padding: 24px 20px;
   position: relative;
   overflow-x: clip;
@@ -349,7 +350,7 @@ html, body, #root {
 /* --- Docs section --- */
 .docs {
   width: 100%;
-  padding: 72px 20px;
+  padding: 72px 20px 24px;
 }
 
 .docs-inner {
@@ -391,4 +392,33 @@ html, body, #root {
   padding: 0;
   border: none;
   background: transparent;
+}
+
+.site-footer {
+  padding: 12px 0 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+}
+
+.footer-link {
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.footer-link:hover {
+  color: rgba(255,255,255,0.92);
+  border-bottom-color: rgba(255,255,255,0.35);
+}
+
+.footer-sep {
+  opacity: 0.5;
 }
