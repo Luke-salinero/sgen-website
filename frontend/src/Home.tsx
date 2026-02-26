@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
-import { login, signup, logout, isAuthenticated, getToken } from "./auth/auth";
+import { isAuthenticated, getToken } from "./auth/auth";
 import SgenDocs from "./components/SgenDocs";
 import { Link } from "react-router-dom";
 
@@ -144,23 +144,6 @@ export default function Home() {
         </p>
 
         <div className="actions">
-          {!authed ? (
-            <>
-              <button className="btn primary" onClick={() => login()}>
-                Log in
-              </button>
-              <button className="btn ghost" onClick={() => signup()}>
-                Sign up
-              </button>
-            </>
-          ) : (
-            <button className="btn ghost" onClick={() => logout()}>
-              Log out
-            </button>
-          )}
-        </div>
-
-        <div className="actions">
           {authed ? (
             <>
               <button
@@ -180,7 +163,7 @@ export default function Home() {
               </button>
             </>
           ) : (
-            <p className="subtitle">Log in to get your API key</p>
+            <p className="subtitle"> </p>
           )}
         </div>
         <div style={{ height: "10vh" }} />
