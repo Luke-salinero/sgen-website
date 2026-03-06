@@ -1,27 +1,47 @@
+/* =========================================================
+   Global reset + base background
+   ========================================================= */
+
 html, body, #root {
   height: 100%;
-  margin: 0;          
+  margin: 0;
   padding: 0;
   background: #07090f;
 }
 
+/* Prevent padding/borders from creating phantom layout/scroll issues */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-/* --- Base page layout --- */
+/* =========================================================
+   Page shell + background layers
+   ========================================================= */
+
 .page {
-  min-height: calc(100vh - 56px); /* 56px = your topbar height */
+  min-height: calc(100vh - 56px); /* 56px = fixed topbar height */
   padding: 24px 20px;
   position: relative;
   overflow-x: clip;
-  background: radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
-              radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
-              #07090f;
+
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
+    radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
+    #07090f;
+
   color: rgba(255, 255, 255, 0.92);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* subtle grid texture */
-.bg-grid {
+/* Background layers live inside .page */
+.bg-grid,
+.bg-glow {
   position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-grid {
   inset: 0;
   background-image:
     linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
@@ -29,12 +49,9 @@ html, body, #root {
   background-size: 80px 80px;
   opacity: 0.08;
   mask-image: radial-gradient(circle at 50% 35%, black 0%, transparent 70%);
-  pointer-events: none;
 }
 
-/* soft glow blobs */
 .bg-glow {
-  position: absolute;
   width: 900px;
   height: 900px;
   border-radius: 50%;
@@ -47,10 +64,18 @@ html, body, #root {
     rgba(255,255,255,0.35)
   );
   transform: translateY(-120px);
-  pointer-events: none;
 }
 
-/* Global top-left home button */
+/* Make sure real page content sits above background layers */
+.page > *:not(.bg-grid):not(.bg-glow) {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   Top bar (fixed) + app layout offsets
+   ========================================================= */
+
 .topbar {
   position: fixed;
   top: 0;
@@ -68,19 +93,78 @@ html, body, #root {
   backdrop-filter: blur(10px);
 }
 
-.topbar-right {
-  margin-left: auto;          /* pushes to the right */
+/* Push main route content below fixed topbar */
+.app-content {
+  padding-top: 56px;
+}
+
+/* Topbar groups */
+.topbar-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.topbar-actions {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Topbar buttons reuse .btn styles, but tighten sizing */
 .topbar-btn {
   padding: 8px 12px;
   font-size: 13px;
   border-radius: 12px;
 }
 
+/* Topbar nav links */
+.topbar-link {
+  text-decoration: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.02);
+}
+
+.topbar-link:hover {
+  color: rgba(255,255,255,0.92);
+  border-color: rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+.topbar-link.is-active {
+  color: rgba(255,255,255,0.95);
+  border-color: rgba(120,170,255,0.35);
+  background: rgba(120,170,255,0.10);
+}
+
+/* Optional status bar under header */
+.topbar-status {
+  position: sticky;
+  top: 56px;
+  z-index: 9998;
+
+  padding: 8px 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+
+  background: rgba(7, 9, 15, 0.35);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Brand / home button */
 .brand {
   text-decoration: none;
   font-weight: 800;
@@ -97,27 +181,9 @@ html, body, #root {
   border: 1px solid rgba(255,255,255,0.08);
 }
 
-/* Make room for the fixed topbar */
-.app-content {
-  padding-top: 56px;
-}
-
-/* --- Hero container --- */
-.hero {
-  position: relative;
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  padding: 44px 28px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow:
-    0 30px 100px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
-}
+/* =========================================================
+   Typography + glint treatment
+   ========================================================= */
 
 .title {
   margin: 0;
@@ -125,6 +191,14 @@ html, body, #root {
   line-height: 1.05;
   font-size: clamp(40px, 6vw, 76px);
   letter-spacing: -0.04em;
+}
+
+.subtitle {
+  margin: 18px auto 26px;
+  max-width: 720px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.70);
 }
 
 .glint {
@@ -181,15 +255,33 @@ html, body, #root {
   100% { transform: translateX(130%) skewX(-18deg); opacity: 0; }
 }
 
-.subtitle {
-  margin: 18px auto 26px;
-  max-width: 720px;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.70);
+/* =========================================================
+   Hero container
+   ========================================================= */
+
+.hero {
+  position: relative;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+
+  /* keep some vertical spacing */
+  padding: 24px 0;
+  margin: 0 auto 100px;
+
+  /* remove box look */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  border-radius: 0;
 }
 
-/* --- Buttons --- */
+/* =========================================================
+   Buttons (shared)
+   ========================================================= */
+
 .actions {
   display: flex;
   justify-content: center;
@@ -236,7 +328,10 @@ html, body, #root {
   font-size: 14px;
 }
 
-/* --- Scroll-triggered binary box --- */
+/* =========================================================
+   Binary module
+   ========================================================= */
+
 .bin-section {
   width: 100%;
   padding: 64px 20px;
@@ -284,9 +379,11 @@ html, body, #root {
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.22);
+
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px 14px;
+
   min-height: 220px;
   transform: translateY(6px);
   opacity: 0.82;
@@ -341,13 +438,10 @@ html, body, #root {
   box-shadow: 0 0 18px rgba(120,170,255,0.18);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .glint::after { animation: none; opacity: 0.6; transform: none; }
-  .btn { transition: none; }
-  .bin-line { animation: none; }
-}
+/* =========================================================
+   Docs typography + container
+   ========================================================= */
 
-/* --- Docs section --- */
 .docs {
   width: 100%;
   padding: 72px 20px 24px;
@@ -358,7 +452,6 @@ html, body, #root {
   margin: 0 auto;
 }
 
-/* This class makes MDX/markdown “feel like docs” */
 .docs-prose {
   text-align: left;
   line-height: 1.7;
@@ -369,7 +462,7 @@ html, body, #root {
 .docs-prose h1 { font-size: 34px; margin: 0 0 16px; }
 .docs-prose h2 { font-size: 24px; margin: 28px 0 12px; }
 .docs-prose h3 { font-size: 18px; margin: 20px 0 10px; }
-.docs-prose p { margin: 12px 0; opacity: 0.9; }
+.docs-prose p  { margin: 12px 0; opacity: 0.9; }
 .docs-prose ul { margin: 12px 0; padding-left: 18px; }
 .docs-prose li { margin: 6px 0; }
 
@@ -394,8 +487,12 @@ html, body, #root {
   background: transparent;
 }
 
+/* =========================================================
+   Footer
+   ========================================================= */
+
 .site-footer {
-  padding: 12px 0 12px;
+  padding: 12px 0;
   display: flex;
   justify-content: center;
 }
@@ -421,4 +518,14 @@ html, body, #root {
 
 .footer-sep {
   opacity: 0.5;
+}
+
+/* =========================================================
+   Reduced motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .glint::after { animation: none; opacity: 0.6; transform: none; }
+  .btn { transition: none; }
+  .bin-line { animation: none; }
 }

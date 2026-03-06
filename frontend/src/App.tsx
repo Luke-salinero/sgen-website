@@ -15,7 +15,10 @@ import GuideSubmit from "./docs/pages/sgen/guides/submit.mdx";
 import GuidePolling from "./docs/pages/sgen/guides/polling.mdx";
 import GuideResults from "./docs/pages/sgen/guides/results.mdx";
 import GuideLatency from "./docs/pages/sgen/guides/latency.mdx";
-import GuideTroubleshooting from "./docs/pages/sgen/guides/troubleshooting.mdx";
+
+import ExamplesLayout from "./examples/ExamplesLayout"; 
+import ExamplesOverview from "./examples/pages/sgen/overview.mdx";
+import Example1 from "./examples/pages/sgen/getting-started.mdx";
 
 import Api from "./docs/pages/sgen/api.mdx";
 
@@ -44,9 +47,15 @@ export default function App() {
             <Route path="sgen/guides/polling" element={<GuidePolling />} />
             <Route path="sgen/guides/results" element={<GuideResults />} />
             <Route path="sgen/guides/latency" element={<GuideLatency />} />
-            <Route path="sgen/guides/troubleshooting" element={<GuideTroubleshooting />} />
 
             <Route path="sgen/api" element={<Api />} />
+          </Route>
+
+          {/* Example pages*/}
+          <Route path="examples" element={<ExamplesLayout />}>
+            <Route index element={<Navigate to="/examples/sgen" replace />} />
+            <Route path="sgen" element={<ExamplesOverview />} />
+            <Route path="sgen/example1" element={<Example1 />} />
           </Route>
 
           {/* Footer pages */}

@@ -2,7 +2,7 @@ export default function SgenDocs() {
   return (
     <section className="docs">
       <div className="docs-inner">
-        <h2>Documentation</h2>
+        <h3> </h3>
       </div>
     </section>
   );

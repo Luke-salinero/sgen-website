@@ -1,1 +1,218 @@
-# Config
+# Generating a Config
+
+SGEN represents candidate graphs using a **bit encoding**.  
+Each candidate is encoded as a binary mask where each bit corresponds to a possible edge in a graph.
+
+This encoding allows SGEN to efficiently enumerate and test large numbers of graph candidates.
+
+---
+
+## How the Encoding Works
+
+For a graph with `num_nodes` vertices:
+
+- There are `n = num_nodes * (num_nodes - 1) / 2` possible undirected edges.
+- Each edge is assigned a **unique bit position**.
+- A candidate graph is represented as an integer bitmask.
+
+A bit value represents whether an edge exists:
+
+| Bit Value | Meaning |
+|-----------|--------|
+| `1` | Edge is present |
+| `0` | Edge is absent |
+
+SGEN then searches **all masks with exactly `k` bits set**.
+
+So:
+
+- `n` → total possible edges
+- `k` → number of edges selected
+
+This is commonly referred to as a **k-of-n bitmask**.
+
+---
+
+## Example
+
+Suppose we have **4 nodes**.
+
+Possible edges:
+
+```
+(0,1)
+(0,2)
+(0,3)
+(1,2)
+(1,3)
+(2,3)
+```
+
+This produces:
+
+```
+n = 6 possible edges
+```
+
+If `k = 2`, SGEN searches all bitmasks with **exactly 2 edges present**.
+
+Example mask:
+
+```
+0b010001
+```
+
+This means two edges are selected.
+
+---
+
+## Config Structure
+
+A generated config file looks like this:
+
+```json
+{
+  "n": 28,
+  "k": 12,
+  "block_size": 3,
+  "existential": false,
+  "prune_masks": ["0b001010...", "0b010001..."],
+  "find_masks": [],
+  "ranges": [
+    ["0b000000111...", "0b111000000..."]
+  ]
+}
+```
+
+### Field Descriptions
+
+| Field | Description |
+|------|-------------|
+| `n` | Number of bits in the encoding (total edges). |
+| `k` | Number of edges selected in each candidate. |
+| `block_size` | Work chunk size used by the SGEN search scheduler. |
+| `existential` | Controls existential vs exhaustive search behavior. |
+| `prune_masks` | Bit patterns representing structures that should be rejected early. |
+| `find_masks` | Patterns SGEN should attempt to find (optional). |
+| `ranges` | Range of bitmasks to search within the k-of-n space. |
+
+---
+
+# Generating a Config Automatically
+
+SGEN configs can be generated using a helper script.
+
+Below is an example generator.
+
+```python
+cfg = generate_config(
+    num_nodes=8,
+    k=22,
+    block_size=3,
+    existential=False,
+    prune_clique_size=3
+)
+
+save_config(cfg, "./out/config8nodes3clique.json")
+```
+
+Running the script:
+
+```bash
+python config_maker.py
+```
+
+This writes a valid SGEN config file.
+
+---
+
+# How Pruning Works
+
+The generator can create **prune masks** representing forbidden substructures.
+
+For example:
+
+```python
+prune_clique_size = 3
+```
+
+Generates masks representing **triangles**.
+
+If a candidate graph contains all edges of one of these masks, SGEN can **reject the candidate early**, avoiding unnecessary work.
+
+This greatly reduces the search space.
+
+---
+
+# Creating a Mask From Edges
+
+You can also manually construct bit encodings.
+
+Example helper:
+
+```python
+def edge_index(i, j, n):
+    return i * n + j - ((i + 2) * (i + 1)) // 2
+
+def mask_from_edges(num_nodes, edges):
+    mask = 0
+    for i, j in edges:
+        if i > j:
+            i, j = j, i
+        mask |= 1 << edge_index(i, j, num_nodes)
+    return mask
+```
+
+Example usage:
+
+```python
+num_nodes = 4
+edges = [(0,1), (2,3)]
+
+mask = mask_from_edges(num_nodes, edges)
+
+print(bin(mask))
+```
+
+This produces a binary mask representing those edges.
+
+---
+
+# Minimal Manual Config Example
+
+A small config can also be written manually.
+
+```python
+import json
+
+config = {
+    "n": 6,
+    "k": 2,
+    "block_size": 1,
+    "existential": False,
+    "prune_masks": [],
+    "find_masks": [],
+    "ranges": [
+        ["0b000011", "0b110000"]
+    ]
+}
+
+with open("config.json", "w") as f:
+    json.dump(config, f, indent=2)
+```
+
+---
+
+# Summary
+
+SGEN uses bit encodings to represent graph candidates efficiently.
+
+Key ideas:
+
+- Graphs are represented as **bitmasks**
+- `n` is the number of possible edges
+- `k` is the number of edges selected
+- `prune_masks` remove unwanted structures early
+- `ranges` control the search space
+
+The `config_maker.py` script automates generating these encodings for larger graphs.
