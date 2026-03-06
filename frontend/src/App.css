@@ -1,19 +1,47 @@
-/* --- Base page layout --- */
+/* =========================================================
+   Global reset + base background
+   ========================================================= */
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #07090f;
+}
+
+/* Prevent padding/borders from creating phantom layout/scroll issues */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Page shell + background layers
+   ========================================================= */
+
 .page {
-  min-height: 100vh;
-  padding: 48px 20px;
+  min-height: calc(100vh - 56px); /* 56px = fixed topbar height */
+  padding: 24px 20px;
   position: relative;
-  overflow-x: hidden;
-  background: radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
-              radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
-              #07090f;
+  overflow-x: clip;
+
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
+    radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.06), transparent 55%),
+    #07090f;
+
   color: rgba(255, 255, 255, 0.92);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* subtle grid texture */
-.bg-grid {
+/* Background layers live inside .page */
+.bg-grid,
+.bg-glow {
   position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-grid {
   inset: 0;
   background-image:
     linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
@@ -21,12 +49,9 @@
   background-size: 80px 80px;
   opacity: 0.08;
   mask-image: radial-gradient(circle at 50% 35%, black 0%, transparent 70%);
-  pointer-events: none;
 }
 
-/* soft glow blobs */
 .bg-glow {
-  position: absolute;
   width: 900px;
   height: 900px;
   border-radius: 50%;
@@ -39,25 +64,126 @@
     rgba(255,255,255,0.35)
   );
   transform: translateY(-120px);
-  pointer-events: none;
 }
 
-/* --- Hero container --- */
-.hero {
+/* Make sure real page content sits above background layers */
+.page > *:not(.bg-grid):not(.bg-glow) {
   position: relative;
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  padding: 44px 28px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow:
-    0 30px 100px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
+  z-index: 1;
 }
+
+/* =========================================================
+   Top bar (fixed) + app layout offsets
+   ========================================================= */
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+
+  background: transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+}
+
+/* Push main route content below fixed topbar */
+.app-content {
+  padding-top: 56px;
+}
+
+/* Topbar groups */
+.topbar-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Topbar buttons reuse .btn styles, but tighten sizing */
+.topbar-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+
+/* Topbar nav links */
+.topbar-link {
+  text-decoration: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.02);
+}
+
+.topbar-link:hover {
+  color: rgba(255,255,255,0.92);
+  border-color: rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+.topbar-link.is-active {
+  color: rgba(255,255,255,0.95);
+  border-color: rgba(120,170,255,0.35);
+  background: rgba(120,170,255,0.10);
+}
+
+/* Optional status bar under header */
+.topbar-status {
+  position: sticky;
+  top: 56px;
+  z-index: 9998;
+
+  padding: 8px 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+
+  background: rgba(7, 9, 15, 0.35);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Brand / home button */
+.brand {
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgba(255,255,255,0.98);
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.brand:hover {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* =========================================================
+   Typography + glint treatment
+   ========================================================= */
 
 .title {
   margin: 0;
@@ -65,6 +191,14 @@
   line-height: 1.05;
   font-size: clamp(40px, 6vw, 76px);
   letter-spacing: -0.04em;
+}
+
+.subtitle {
+  margin: 18px auto 26px;
+  max-width: 720px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.70);
 }
 
 .glint {
@@ -121,15 +255,33 @@
   100% { transform: translateX(130%) skewX(-18deg); opacity: 0; }
 }
 
-.subtitle {
-  margin: 18px auto 26px;
-  max-width: 720px;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.70);
+/* =========================================================
+   Hero container
+   ========================================================= */
+
+.hero {
+  position: relative;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+
+  /* keep some vertical spacing */
+  padding: 24px 0;
+  margin: 0 auto 100px;
+
+  /* remove box look */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  border-radius: 0;
 }
 
-/* --- Buttons --- */
+/* =========================================================
+   Buttons (shared)
+   ========================================================= */
+
 .actions {
   display: flex;
   justify-content: center;
@@ -176,7 +328,10 @@
   font-size: 14px;
 }
 
-/* --- Scroll-triggered binary box --- */
+/* =========================================================
+   Binary module
+   ========================================================= */
+
 .bin-section {
   width: 100%;
   padding: 64px 20px;
@@ -224,9 +379,11 @@
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.22);
+
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px 14px;
+
   min-height: 220px;
   transform: translateY(6px);
   opacity: 0.82;
@@ -281,16 +438,13 @@
   box-shadow: 0 0 18px rgba(120,170,255,0.18);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .glint::after { animation: none; opacity: 0.6; transform: none; }
-  .btn { transition: none; }
-  .bin-line { animation: none; }
-}
+/* =========================================================
+   Docs typography + container
+   ========================================================= */
 
-/* --- Docs section --- */
 .docs {
   width: 100%;
-  padding: 72px 20px;
+  padding: 72px 20px 24px;
 }
 
 .docs-inner {
@@ -298,7 +452,6 @@
   margin: 0 auto;
 }
 
-/* This class makes MDX/markdown “feel like docs” */
 .docs-prose {
   text-align: left;
   line-height: 1.7;
@@ -309,7 +462,7 @@
 .docs-prose h1 { font-size: 34px; margin: 0 0 16px; }
 .docs-prose h2 { font-size: 24px; margin: 28px 0 12px; }
 .docs-prose h3 { font-size: 18px; margin: 20px 0 10px; }
-.docs-prose p { margin: 12px 0; opacity: 0.9; }
+.docs-prose p  { margin: 12px 0; opacity: 0.9; }
 .docs-prose ul { margin: 12px 0; padding-left: 18px; }
 .docs-prose li { margin: 6px 0; }
 
@@ -332,4 +485,47 @@
   padding: 0;
   border: none;
   background: transparent;
+}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+
+.site-footer {
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+}
+
+.footer-link {
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.footer-link:hover {
+  color: rgba(255,255,255,0.92);
+  border-bottom-color: rgba(255,255,255,0.35);
+}
+
+.footer-sep {
+  opacity: 0.5;
+}
+
+/* =========================================================
+   Reduced motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .glint::after { animation: none; opacity: 0.6; transform: none; }
+  .btn { transition: none; }
+  .bin-line { animation: none; }
 }
