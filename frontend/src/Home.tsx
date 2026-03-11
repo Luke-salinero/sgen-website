@@ -11,7 +11,7 @@ function About() {
         </h2>
 
         <p className="about-text">
-          SGEN is a xxx.
+          SGEN is a TEST FOR WEBSITE RESPONSIVENESS.
         </p>
 
         <div className="about-grid">
