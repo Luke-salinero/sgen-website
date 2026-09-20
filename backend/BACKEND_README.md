@@ -1,6 +1,12 @@
 # sgen Backend
 
-FastAPI-based backend service for the sgen website.
+**Status: not implemented.** This directory currently only has tooling
+config (`pyproject.toml`, `requirements.txt`, `.pre-commit-config.yaml`) —
+there is no `app/` package or FastAPI application yet, so the instructions
+below describe the intended setup once one exists, not something you can
+run today.
+
+Planned: a FastAPI-based backend service for the sgen website.
 
 ## Tech Stack
 - Python
